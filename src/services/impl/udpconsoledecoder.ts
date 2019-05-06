@@ -11,6 +11,10 @@ export class UdpConsoleDecoder {
         return data
     }
 
+    isCommand(data: Buffer): boolean {
+        return data.length >= 2 && data[0] != 0;
+    }
+
     decode(data: Buffer): ConsoleCommand {
         const messageType = data[0]
         const messageVersion = data[1]

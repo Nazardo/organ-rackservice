@@ -50,12 +50,14 @@ export class UdpConsoleService implements IConsoleService {
             .pipe(
                 map((event) => {
                     try {
-                        return this.udpConsoleDecoder.decode(event.message)
+                        if (this.udpConsoleDecoder.isCommand(event.message)) {
+                            return this.udpConsoleDecoder.decode(event.message)
+                        }
                     } catch (error) {
                         logger('UDP console received: %s from %s', error, event.rinfo.address)
                     }
                 }),
-                filter((value, index) => value !== undefined),
+                filter((value) => value !== undefined),
                 map(value => <ConsoleCommand>value)
             )
     }
