@@ -1,11 +1,12 @@
 import { Observable } from "rxjs"
 import { Status } from "src/model/status"
 
-export type RackCommand = 'start' | 'stop'
+export type RackCommand = 'start' | 'stop' | 'reset'
 
 export interface IRackService {
     Commands: Observable<RackCommand>
-    setMainPower(isOn: boolean): Promise<void>
-    setAmpPower(isOn: boolean): Promise<void>
-    applyStatus(status: Status): Promise<void>
+    setMainPower(isOn: boolean): void
+    setAmpPower(isOn: boolean): void
+    applyStatus(status: Status): void
+    dispose(): void
 }

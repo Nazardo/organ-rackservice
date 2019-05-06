@@ -17,6 +17,7 @@ export class DummyRackService implements IRackService {
         console.log('Current status: ' + status)
         return Promise.resolve()
     }
+    dispose(): void {}
 
     constructor() {
         this.Commands = from([])

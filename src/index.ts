@@ -137,9 +137,15 @@ async function main() {
             await rackService.setAmpPower(true)
         }
         rackStatus = Status.SystemOn
-        rackCommands = rackService.Commands.subscribe((command) => {
+        rackCommands = rackService.Commands.subscribe(async (command) => {
             if (command === 'stop') {
                 nextStatus(requestPcShutdown)
+            } else if (command === 'reset') {
+                try {
+                    await hauptwerkService.resetMidiAndAudio()
+                } catch (e) {
+                    logger('Error sending reset to Hauptwerk', e)
+                }
             }
         })
         consoleCommands = consoleService.Commands.subscribe(async (command) => {
@@ -157,16 +163,26 @@ async function main() {
 
     function waitConsoleTimeout(): Promise<void> {
         rackStatus = Status.WaitConsoleTimeout
-        rackCommands = rackService.Commands.subscribe((command) => {
+        rackCommands = rackService.Commands.subscribe(async (command) => {
             if (command === 'start') {
                 nextStatus(systemOn)
             } else if (command === 'stop') {
                 nextStatus(requestPcShutdown)
+            } else if (command === 'reset') {
+                try {
+                    await hauptwerkService.resetMidiAndAudio()
+                } catch (e) {
+                    logger('Error sending reset to Hauptwerk', e)
+                }
             }
         })
         consoleCommands = consoleService.Commands.subscribe(async (command) => {
             if (command === 'reset') {
-                await hauptwerkService.resetMidiAndAudio()
+                try {
+                    await hauptwerkService.resetMidiAndAudio()
+                } catch (e) {
+                    logger('Error sending reset to Hauptwerk', e)
+                }
             } else if (command === 'start') {
                 nextStatus(systemOn)
             }
