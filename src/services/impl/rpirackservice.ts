@@ -30,11 +30,15 @@ export class RpiRackService implements IRackService {
     Commands: Observable<RackCommand>
 
     setMainPower(isOn: boolean): void {
-        this.mainPowerOut.digitalWrite(isOn ? 1 : 0)
+        // Relays are activated with a logical zero
+        this.logger('Set MAIN POWER : %s', isOn);
+        this.mainPowerOut.digitalWrite(isOn ? 0 : 1)
     }
 
     setAmpPower(isOn: boolean): void {
-        this.ampPowerOut.digitalWrite(isOn ? 1 : 0)
+        // Relays are activated with a logical zero
+        this.logger('Set AMP POWER : %s', isOn);
+        this.ampPowerOut.digitalWrite(isOn ? 0 : 1)
     }
 
     applyStatus(status: Status): void {
