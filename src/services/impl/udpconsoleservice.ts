@@ -2,7 +2,7 @@ import { createSocket, RemoteInfo, Socket } from 'dgram'
 import { Observable, fromEvent } from 'rxjs'
 import { map, filter } from 'rxjs/operators'
 import { Debugger } from 'debug'
-import { Status } from 'src/model/status'
+import { Status } from '../../model/status'
 import { IConsoleService, ConsoleCommand } from '../iconsoleservice'
 import { UdpConsoleDecoder } from './udpconsoledecoder'
 

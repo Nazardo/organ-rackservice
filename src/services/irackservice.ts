@@ -1,5 +1,5 @@
 import { Observable } from "rxjs"
-import { Status } from "src/model/status"
+import { Status } from "../model/status"
 
 export type RackCommand = 'start' | 'stop' | 'reset'
 

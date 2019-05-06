@@ -3,7 +3,7 @@ import { concatMap, map } from "rxjs/operators"
 import { IPcStatusService } from "../ipcstatusservice"
 import { PcStatus } from "../../model/pcstatus"
 import { IRestClient, RestResponse } from "../../rest/irestclient"
-import { PcStatusApiResponse } from "src/rest/pcstatusapiresponse"
+import { PcStatusApiResponse } from "../../rest/pcstatusapiresponse"
 
 export class RestPcStatusService implements IPcStatusService {
     Statuses: Observable<PcStatus>

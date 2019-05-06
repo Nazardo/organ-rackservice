@@ -1,5 +1,5 @@
 import { Observable, from } from "rxjs"
-import { Status } from "src/model/status"
+import { Status } from "../../model/status"
 import { IRackService, RackCommand } from "../irackservice"
 
 export class DummyRackService implements IRackService {

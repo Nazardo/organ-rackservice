@@ -2,7 +2,7 @@ import 'jasmine'
 import { take } from 'rxjs/operators';
 import { RestPcStatusService } from './restpcstatusservice'
 import { IRestClient, RestResponse } from '../../rest/irestclient'
-import { PcStatusApiResponse } from 'src/rest/pcstatusapiresponse'
+import { PcStatusApiResponse } from '../../rest/pcstatusapiresponse'
 
 describe('RestPcStatusService', () => {
     const testUrl: string = 'http://localhost:2000/testapi/status'

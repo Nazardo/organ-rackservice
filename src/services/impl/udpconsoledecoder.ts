@@ -1,5 +1,5 @@
 import { ConsoleCommand } from "../iconsoleservice"
-import { Status } from "src/model/status"
+import { Status } from "../../model/status"
 
 export class UdpConsoleDecoder {
 

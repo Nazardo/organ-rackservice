@@ -1,6 +1,6 @@
 import { IRackService, RackCommand } from "../irackservice";
 import { Observable, Subject, Subscription, interval } from "rxjs";
-import { Status } from "src/model/status";
+import { Status } from "../../model/status";
 import { Debugger } from "debug"
 import { Gpio } from "pigpio";
 

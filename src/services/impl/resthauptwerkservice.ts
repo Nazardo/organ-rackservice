@@ -1,5 +1,5 @@
 import { IHauptwerkService } from "../ihauptwerkservice"
-import { IRestClient } from "src/rest/irestclient"
+import { IRestClient } from "../../rest/irestclient"
 
 export class RestHaupwterkService implements IHauptwerkService {
     private startUrl: string
