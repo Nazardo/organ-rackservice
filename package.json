@@ -1,0 +1,31 @@
+{
+  "name": "virtualorgan.rackservice",
+  "version": "1.0.0",
+  "description": "Service running on the Virtual Organ's rack",
+  "main": "dist/index.js",
+  "scripts": {
+    "test": "jasmine-ts ./src/tsconfig.spec.json --config=jasmine.json",
+    "start": "npm run build && node dist/index.js",
+    "build": "tsc -p src/tsconfig.app.json"
+  },
+  "private": true,
+  "author": "Mauro Levra",
+  "license": "UNLICENSED",
+  "devDependencies": {
+    "@types/argparse": "^1.0.36",
+    "@types/config": "0.0.34",
+    "@types/debug": "^4.1.2",
+    "@types/jasmine": "^3.3.9",
+    "@types/node": "^11.10.4",
+    "jasmine": "^3.3.1",
+    "jasmine-ts": "^0.3.0",
+    "ts-node": "^8.0.2"
+  },
+  "dependencies": {
+    "argparse": "^1.0.10",
+    "config": "^3.0.1",
+    "debug": "^4.1.1",
+    "rxjs": "^6.4.0",
+    "typescript": "^3.3.3333"
+  }
+}
