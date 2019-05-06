@@ -91,7 +91,7 @@ async function main() {
             await rackService.setMainPower(true)
         }
         rackStatus = Status.PoweringOnComputer
-        wakeUpInterval = interval(5000).subscribe(async (n) => {
+        wakeUpInterval = interval(3000).subscribe(async (n) => {
             try {
                 await wolService.wakeUpOnLan(pcMacAddress)
             } catch (e) {
@@ -107,7 +107,7 @@ async function main() {
 
     function startingHaupwerk(): Promise<void> {
         rackStatus = Status.StartingHauptwerk
-        hauptwerkSendCommand = interval(1000).subscribe(async (_) => {
+        hauptwerkSendCommand = interval(5000).subscribe(async (_) => {
             try {
                 await hauptwerkService.startHaupwerk()
             } catch (e) {
