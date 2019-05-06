@@ -1,0 +1,32 @@
+import { ConsoleCommand } from "../iconsoleservice";
+
+export class UdpConsoleDecoder {
+    decode(data: Buffer): ConsoleCommand {
+        const messageType = data[0]
+        const messageVersion = data[1]
+        switch (messageType) {
+            case 0x01:
+                return this.decodeStartStop(messageVersion, data.subarray(2))
+            case 0x02:
+                return this.decodeReset(messageVersion, data.subarray(2))
+        }
+        throw 'Unknown message type'
+    }
+
+    private decodeStartStop(messageVersion: number, data: Buffer): ConsoleCommand {
+        if (messageVersion == 1) {
+            if (data[0] == 1) {
+                return 'start'
+            } else {
+                return 'stop'
+            }
+        }
+        throw 'Unknown message version'
+    }
+
+    private decodeReset(messageVersion: number, data: Buffer): ConsoleCommand {
+        if (messageVersion == 1)
+            return 'reset'
+        throw 'Unknown message version'
+    }
+}
