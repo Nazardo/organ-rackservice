@@ -32,7 +32,7 @@ async function main() {
     const restClient: IRestClient = new HttpRestClient()
     const hauptwerkService: IHauptwerkService = new RestHaupwterkService(restClient, hauptwerkEndpoint)
     const pcStatusService: IPcStatusService = new RestPcStatusService(restClient, statusEndpoint, 5000, 2500)
-    const wolService: IWolService = new UdpWolService(ipBroadcast)
+    const wolService: IWolService = await new UdpWolService(ipBroadcast).bind()
 
     let rackStatus: Status = Status.SystemOff
 
