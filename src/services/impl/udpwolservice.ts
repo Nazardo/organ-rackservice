@@ -1,6 +1,5 @@
-import { IWolService } from "../iwolservice";
-import { Observable, Subject } from "rxjs";
-import { createSocket, Socket } from "dgram";
+import { createSocket } from "dgram"
+import { IWolService } from "../iwolservice"
 
 export class UdpWolService implements IWolService {
     static readonly UdpPort: number = 2
@@ -18,17 +17,22 @@ export class UdpWolService implements IWolService {
         return this
     }
 
-    wakeUpOnLan(macAddress: Uint8Array): Observable<void> {
-        const magicPacket = UdpWolService.createMagicPacket(macAddress)
-        const subject = new Subject<void>()
-        this.socket.send(magicPacket, UdpWolService.UdpPort, this.broadcastIp, (error: Error | null, bytes: number) => {
-            if (error) {
-                subject.error(error)
-            } else {
-                subject.complete()
-            }
+    wakeUpOnLan(macAddress: Uint8Array): Promise<void> {
+        return new Promise<void>((resolve, reject) => {
+            const magicPacket = UdpWolService.createMagicPacket(macAddress)
+            this.socket.send(
+                magicPacket,
+                UdpWolService.UdpPort,
+                this.broadcastIp,
+                (error: Error | null, bytes: number) => {
+                    if (error) {
+                        reject(error)
+                    } else {
+                        resolve()
+                    }
+                }
+            )
         })
-        return subject
     }
 
     private static createMagicPacket(macAddress: Uint8Array): Buffer {

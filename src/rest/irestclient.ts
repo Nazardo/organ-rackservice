@@ -1,5 +1,6 @@
 export interface IRestClient {
     get: <TResponse>(url: string, timeout: number) => Promise<RestResponse<TResponse>>
+    postNoData: <TResponse>(url: string, timeout: number) => Promise<RestResponse<TResponse>>
 }
 export interface RestResponse<TResponse> {
     result: 'success' | 'timeout' | 'error',

@@ -1,6 +1,16 @@
-import { ConsoleCommand } from "../iconsoleservice";
+import { ConsoleCommand } from "../iconsoleservice"
+import { Status } from "src/model/status"
 
 export class UdpConsoleDecoder {
+
+    encodeStatus(status: Status): Buffer {
+        const data = Buffer.allocUnsafe(3)
+        data[0] = 0 // Status message
+        data[1] = 1 // version 1
+        data[2] = status
+        return data
+    }
+
     decode(data: Buffer): ConsoleCommand {
         const messageType = data[0]
         const messageVersion = data[1]

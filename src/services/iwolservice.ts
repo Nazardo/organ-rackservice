@@ -1,5 +1,3 @@
-import { Observable } from "rxjs";
-
 export interface IWolService {
-    wakeUpOnLan(macAddress: Uint8Array): Observable<void>
+    wakeUpOnLan(macAddress: Uint8Array): Promise<void>
 }

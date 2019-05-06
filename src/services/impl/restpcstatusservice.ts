@@ -1,8 +1,9 @@
-import { IPcStatusService } from "../ipcstatusservice";
-import { Observable, interval } from "rxjs";
-import { PcStatus } from "../../model/pcstatus";
-import { concatMap, map } from "rxjs/operators";
-import { IRestClient, RestResponse } from "../../rest/irestclient";
+import { Observable, interval } from "rxjs"
+import { concatMap, map } from "rxjs/operators"
+import { IPcStatusService } from "../ipcstatusservice"
+import { PcStatus } from "../../model/pcstatus"
+import { IRestClient, RestResponse } from "../../rest/irestclient"
+import { PcStatusApiResponse } from "src/rest/pcstatusapiresponse"
 
 export class RestPcStatusService implements IPcStatusService {
     Statuses: Observable<PcStatus>
@@ -13,14 +14,19 @@ export class RestPcStatusService implements IPcStatusService {
         pollingInterval: number,
         httpTimeout: number) {
         this.Statuses = interval(pollingInterval).pipe(
-            concatMap(() => client.get<{}>(statusApiUrl, httpTimeout)),
-            map((restResponse: RestResponse<{}>) => {
+            concatMap(() => client.get<PcStatusApiResponse>(statusApiUrl, httpTimeout)),
+            map((restResponse: RestResponse<PcStatusApiResponse>) => {
                 if (restResponse.result === 'timeout') {
-                    return PcStatus.pingKo()
-                } else if (restResponse.result === 'error') {
-                    return PcStatus.createApiError(restResponse.errorMessage || 'undefined')
+                    return PcStatus.apiNotReachable()
+                } else if (restResponse.data !== undefined) {
+                    const pcStatus = new PcStatus()
+                    pcStatus.apiReachable = true
+                    pcStatus.hauptwerkRunning = restResponse.data.running
+                    pcStatus.midiActive = restResponse.data.midiActive
+                    pcStatus.audioActive = restResponse.data.audioActive
+                    return pcStatus
                 } else {
-                    return PcStatus.pingOk()
+                    return PcStatus.createApiError(restResponse.errorMessage || 'undefined')
                 }
             })
         )

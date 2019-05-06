@@ -1,6 +1,6 @@
 import 'jasmine'
 import { UdpConsoleDecoder } from './udpconsoledecoder'
-import { ConsoleCommand } from '../iconsoleservice';
+import { ConsoleCommand } from '../iconsoleservice'
 
 // Start/Stop messages have message Type = 1
 // Version 1 format:

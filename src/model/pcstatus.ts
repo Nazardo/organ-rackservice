@@ -1,13 +1,11 @@
 export class PcStatus {
     apiReachable: boolean = false
+    hauptwerkRunning: boolean = false
+    midiActive: boolean = false
+    audioActive: boolean = false
     apiError: string = ''
 
-    static pingOk(): PcStatus {
-        const status = new PcStatus()
-        status.apiReachable = true
-        return status
-    }
-    static pingKo(): PcStatus {
+    static apiNotReachable(): PcStatus {
         return new PcStatus()
     }
     static createApiError(message: string): PcStatus {
