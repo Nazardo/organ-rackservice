@@ -213,6 +213,7 @@ async function main() {
     }
 
     function waitForPcToHalt(): Promise<void> {
+        rackStatus = Status.WaitPcToHalt
         waitTimeout = interval(haltTimeoutMillis)
             .pipe(take(1))
             .subscribe((_) => nextStatus(systemOff))
