@@ -44,9 +44,6 @@ async function main() {
         await rackService.applyStatus(rackStatus)
     })
 
-    statesObservable.subscribe(async (f) => await f())
-    statesObservable.next(systemOff)
-
     // Subscriptions used in state functions and unsubscribed by unsubscribeAll()
     let consoleCommands: Subscription = new Subscription()
     let rackCommands: Subscription = new Subscription()
@@ -54,6 +51,9 @@ async function main() {
     let pcStatuses: Subscription = new Subscription()
     let wakeUpInterval: Subscription = new Subscription()
     let waitTimeout: Subscription = new Subscription()
+
+    statesObservable.subscribe(async (f) => await f())
+    statesObservable.next(systemOff)
 
     function unsubscribeAll(): void {
         consoleCommands.unsubscribe()
