@@ -1,5 +1,6 @@
 export interface IHauptwerkService {
-    startHaupwerk(): Promise<void>
     resetMidiAndAudio(): Promise<void>
-    shutdownPc(): Promise<void>
+    restartHaupwerk(): Promise<void>
+    restartComputer(): Promise<void>
+    shutdownComputer(): Promise<void>
 }

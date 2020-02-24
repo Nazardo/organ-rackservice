@@ -1,5 +1,5 @@
 import { Observable, from } from "rxjs"
-import { Status } from "../../model/status"
+import { LedStatus } from "../../model/ledstatus"
 import { IRackService, RackCommand } from "../irackservice"
 
 export class DummyRackService implements IRackService {
@@ -13,8 +13,9 @@ export class DummyRackService implements IRackService {
         console.log('AMP POWER: ' + isOn ? 'ON' : 'OFF')
         return Promise.resolve()
     }
-    applyStatus(status: Status): Promise<void> {
-        console.log('Current status: ' + status)
+    setLedStatus(ledStatus: LedStatus[]): Promise<void> {
+        console.log('Current status: R(%s), G(%s), B(%s)',
+            ledStatus[0], ledStatus[1], ledStatus[2])
         return Promise.resolve()
     }
     dispose(): void {}

@@ -1,18 +1,12 @@
 import { IRackService, RackCommand } from "../irackservice";
 import { Observable, Subject, Subscription, interval } from "rxjs";
-import { Status } from "../../model/status";
+import { LedStatus } from "../../model/ledstatus";
 import { Debugger } from "debug"
 import { Gpio } from "pigpio";
 
-interface LedStatus {
-    isBlinking: boolean,
-    isOn: boolean
-}
-
-interface LedSemaphore {
-    green: LedStatus,
-    yellow: LedStatus,
-    red: LedStatus
+interface LampStatus {
+    mustBlink: boolean,
+    isCurrentlyOn: boolean
 }
 
 export class RpiRackService implements IRackService {
@@ -21,11 +15,7 @@ export class RpiRackService implements IRackService {
     ledGreen: Gpio
     ledYellow: Gpio
     ledRed: Gpio
-    ledSemaphore: LedSemaphore = {
-        green: { isBlinking: false, isOn: false },
-        yellow: { isBlinking: false, isOn: false },
-        red: { isBlinking: false, isOn: false },
-    }
+    ledSemaphore: LampStatus[]
     blinkingTimer: Subscription
     Commands: Observable<RackCommand>
 
@@ -41,30 +31,24 @@ export class RpiRackService implements IRackService {
         this.ampPowerOut.digitalWrite(isOn ? 0 : 1)
     }
 
-    applyStatus(status: Status): void {
-        this.ledSemaphore = {
-            red: {
-                isOn: status === Status.SystemOff
-                    || status === Status.WaitPcToHalt,
-                isBlinking: status === Status.RequestComputerShutdown
+    setLedStatus(ledStatus: LedStatus[]): void {
+        this.ledSemaphore = [
+            {
+                isCurrentlyOn: ledStatus[0] === LedStatus.On,
+                mustBlink: ledStatus[0] === LedStatus.Blinking
             },
-            yellow: {
-                isOn: status === Status.PoweringOnComputer
-                    || status === Status.StartingHauptwerk
-                    || status === Status.WaitConsoleTimeout
-                    || status === Status.RequestComputerShutdown
-                    || status === Status.WaitPcToHalt,
-                isBlinking: false
+            {
+                isCurrentlyOn: ledStatus[1] === LedStatus.On,
+                mustBlink: ledStatus[1] === LedStatus.Blinking
             },
-            green: {
-                isOn: status === Status.StartingHauptwerk
-                    || status === Status.SystemOn,
-                isBlinking: status === Status.PoweringOnComputer
-            }
-        }
-        this.ledRed.digitalWrite(this.ledSemaphore.red.isOn ? 1 : 0)
-        this.ledYellow.digitalWrite(this.ledSemaphore.yellow.isOn ? 1 : 0)
-        this.ledGreen.digitalWrite(this.ledSemaphore.green.isOn ? 1 : 0)
+            {
+                isCurrentlyOn: ledStatus[2] === LedStatus.On,
+                mustBlink: ledStatus[2] === LedStatus.Blinking
+            },
+        ]
+        this.ledRed.digitalWrite(this.ledSemaphore[0].isCurrentlyOn ? 1 : 0)
+        this.ledYellow.digitalWrite(this.ledSemaphore[1].isCurrentlyOn ? 1 : 0)
+        this.ledGreen.digitalWrite(this.ledSemaphore[2].isCurrentlyOn ? 1 : 0)
     }
 
     dispose(): void {
@@ -73,6 +57,11 @@ export class RpiRackService implements IRackService {
 
     constructor(
         private logger: Debugger) {
+        this.ledSemaphore = [
+            { isCurrentlyOn: false, mustBlink: false },
+            { isCurrentlyOn: false, mustBlink: false },
+            { isCurrentlyOn: false, mustBlink: false }
+        ]
         const commandsSubject: Subject<RackCommand> = new Subject<RackCommand>()
         this.Commands = commandsSubject
         this.mainPowerOut = new Gpio(17, { mode: Gpio.OUTPUT })
@@ -81,31 +70,31 @@ export class RpiRackService implements IRackService {
         this.ledYellow = new Gpio(23, { mode: Gpio.OUTPUT })
         this.ledRed = new Gpio(24, { mode: Gpio.OUTPUT })
 
-        const startButton: Gpio = new Gpio(5, { mode: Gpio.INPUT, pullUpDown: Gpio.PUD_UP, alert: true})
-        const stopButton: Gpio = new Gpio(6, { mode: Gpio.INPUT, pullUpDown: Gpio.PUD_UP, alert: true})
-        const resetButton: Gpio = new Gpio(12, { mode: Gpio.INPUT, pullUpDown: Gpio.PUD_UP, alert: true})
+        const greenButton: Gpio = new Gpio(5, { mode: Gpio.INPUT, pullUpDown: Gpio.PUD_UP, alert: true})
+        const redButton: Gpio = new Gpio(6, { mode: Gpio.INPUT, pullUpDown: Gpio.PUD_UP, alert: true})
+        const blackButton: Gpio = new Gpio(12, { mode: Gpio.INPUT, pullUpDown: Gpio.PUD_UP, alert: true})
 
-        startButton.glitchFilter(10000).on('alert', (level) => {
-            if (level === 0) { commandsSubject.next('start') }
+        greenButton.glitchFilter(10000).on('alert', (level) => {
+            if (level === 0) { commandsSubject.next(RackCommand.ManualPowerOn) }
         })
-        stopButton.glitchFilter(10000).on('alert', (level) => {
-            if (level === 0) { commandsSubject.next('stop') }
+        redButton.glitchFilter(10000).on('alert', (level) => {
+            if (level === 0) { commandsSubject.next(RackCommand.PowerOff) }
         })
-        resetButton.glitchFilter(10000).on('alert', (level) => {
-            if (level === 0) { commandsSubject.next('reset') }
+        blackButton.glitchFilter(10000).on('alert', (level) => {
+            if (level === 0) { commandsSubject.next(RackCommand.ReleaseLocalControl) }
         })
 
-        function applyBlinking(led: LedStatus, out: Gpio): void {
-            if (led.isBlinking) {
-                led.isOn = !led.isOn
-                out.digitalWrite(led.isOn ? 1 : 0)
+        function applyBlinking(led: LampStatus, out: Gpio): void {
+            if (led.mustBlink) {
+                led.isCurrentlyOn = !led.isCurrentlyOn
+                out.digitalWrite(led.isCurrentlyOn ? 1 : 0)
             }
         }
 
         this.blinkingTimer = interval(1000).subscribe((_) => {
-            applyBlinking(this.ledSemaphore.green, this.ledGreen)
-            applyBlinking(this.ledSemaphore.yellow, this.ledYellow)
-            applyBlinking(this.ledSemaphore.red, this.ledRed)
+            applyBlinking(this.ledSemaphore[0], this.ledRed)
+            applyBlinking(this.ledSemaphore[1], this.ledYellow)
+            applyBlinking(this.ledSemaphore[2], this.ledGreen)
         })
     }
 }

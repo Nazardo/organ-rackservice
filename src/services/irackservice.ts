@@ -1,12 +1,16 @@
 import { Observable } from "rxjs"
-import { Status } from "../model/status"
+import { LedStatus } from "../model/ledstatus"
 
-export type RackCommand = 'start' | 'stop' | 'reset'
+export enum RackCommand {
+    PowerOff = 0,
+    ManualPowerOn = 1,
+    ReleaseLocalControl = 2
+}
 
 export interface IRackService {
     Commands: Observable<RackCommand>
     setMainPower(isOn: boolean): void
     setAmpPower(isOn: boolean): void
-    applyStatus(status: Status): void
+    setLedStatus(status: LedStatus[]): void
     dispose(): void
 }
