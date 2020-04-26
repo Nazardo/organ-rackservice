@@ -3,6 +3,9 @@
     "pcApi": "http://192.168.89.100:5000/",
     "pcMacAddress": "AA:AA:AA:AA:AA:AA",
     "ipBroadcast": "192.168.89.255",
-    "consoleTimeout": 180000,
+    "poweringOnComputerTimeout": 300000,
+    "powerCycleTimeout": 20000,
+    "consoleKeepAliveTimeout": 20000,
+    "consoleTimeout": 160000,
     "haltTimeout": 60000
 }
