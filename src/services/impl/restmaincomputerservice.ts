@@ -1,9 +1,8 @@
-import { IHauptwerkService } from "../ihauptwerkservice"
+import { IMainComputerService } from "../imaincomputerservice"
 import { IRestClient } from "../../rest/irestclient"
 
-export class RestHaupwterkService implements IHauptwerkService {
+export class RestMainComputerService implements IMainComputerService {
     private restartHauptwerkUrl: string
-    private restartComputerUrl: string
     private resetMidiAudioUrl: string
     private shutdownComputerUrl: string
 
@@ -11,12 +10,8 @@ export class RestHaupwterkService implements IHauptwerkService {
         await this.postTo(this.resetMidiAudioUrl)
     }
 
-    async restartHaupwerk(): Promise<void> {
+    async restartHauptwerk(): Promise<void> {
         await this.postTo(this.restartHauptwerkUrl);
-    }
-
-    async restartComputer(): Promise<void> {
-        await this.postTo(this.restartComputerUrl)
     }
 
     async shutdownComputer(): Promise<void> {
@@ -31,9 +26,8 @@ export class RestHaupwterkService implements IHauptwerkService {
         private client: IRestClient,
         hauptwerkApiUrl: string,
         private timeout: number = 2000) {
-        this.restartHauptwerkUrl = hauptwerkApiUrl + '/restart'
+        this.restartHauptwerkUrl = hauptwerkApiUrl + '/restart-hauptwerk'
         this.resetMidiAudioUrl = hauptwerkApiUrl + '/reset-midi-audio'
-        this.restartComputerUrl = hauptwerkApiUrl + '/restart-pc'
-        this.shutdownComputerUrl = hauptwerkApiUrl + '/shutdown-pc'
+        this.shutdownComputerUrl = hauptwerkApiUrl + '/shutdown'
     }
 }

@@ -54,7 +54,7 @@ export class UdpConsoleService implements IConsoleService {
             // 0: Green button
             [null, null],
             // 1: Red button
-            [ConsoleCommand.RestartComputer, ConsoleCommand.PowerCycle],
+            [ConsoleCommand.ShutdownComputer, ConsoleCommand.PowerCycle],
             // 2: Black button
             [ConsoleCommand.RestartAudioMidi, ConsoleCommand.RestartHauptwerk]
         ]

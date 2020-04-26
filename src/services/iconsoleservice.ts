@@ -4,7 +4,7 @@ import { LedStatus } from "../model/ledstatus"
 export enum ConsoleCommand {
     ConsolePowerOff = 0,
     ConsolePowerOn = 1,
-    RestartComputer = 2,
+    ShutdownComputer = 2,
     PowerCycle = 3,
     RestartHauptwerk = 4,
     RestartAudioMidi = 5,

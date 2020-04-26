@@ -1,5 +1,5 @@
 import { ConsoleCommand } from "./iconsoleservice";
-import { IHauptwerkService } from "./ihauptwerkservice";
+import { IMainComputerService } from "./imaincomputerservice";
 
 export class ConsoleCommandsForwarder {
     async forward(consoleCommand: ConsoleCommand) : Promise<void> {
@@ -7,16 +7,13 @@ export class ConsoleCommandsForwarder {
             case ConsoleCommand.RestartAudioMidi:
                 await this.computerService.resetMidiAndAudio()
                 break
-            case ConsoleCommand.RestartComputer:
-                await this.computerService.restartComputer()
-                break
             case ConsoleCommand.RestartHauptwerk:
-                await this.computerService.restartHaupwerk()
+                await this.computerService.restartHauptwerk()
                 break
         }
     }
 
     constructor(
-        private computerService: IHauptwerkService
+        private computerService: IMainComputerService
     ) {}
 }

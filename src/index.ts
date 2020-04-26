@@ -6,11 +6,11 @@ import { Status } from './model/status'
 import { IRestClient } from './rest/irestclient'
 import { HttpRestClient } from './rest/impl/httprestclient'
 import { IConsoleService, ConsoleCommand } from './services/iconsoleservice'
-import { IHauptwerkService } from './services/ihauptwerkservice'
+import { IMainComputerService } from './services/imaincomputerservice'
 import { IPcStatusService } from './services/ipcstatusservice'
 import { IRackService, RackCommand } from './services/irackservice'
 import { IWolService } from './services/iwolservice'
-import { RestHaupwterkService } from './services/impl/resthauptwerkservice'
+import { RestMainComputerService } from './services/impl/restmaincomputerservice'
 import { RestPcStatusService } from './services/impl/restpcstatusservice'
 import { RpiRackService } from './services/impl/rpirackservice'
 import { UdpConsoleService } from './services/impl/udpconsoleservice'
@@ -21,7 +21,7 @@ import { LedConverter } from './model/ledconverter'
 const logger = debug('rackservice')
 const pcMacAddress = Uint8Array.from(config.get<string>('pcMacAddress').split(':').map((s) => parseInt(s, 16)))
 const statusEndpoint = config.get<string>('pcApi') + 'api/status'
-const hauptwerkEndpoint = config.get<string>('pcApi') + 'api/hauptwerk'
+const mainApiServiceEndpoint = config.get<string>('pcApi') + 'api/main'
 const ipBroadcast = config.get<string>('ipBroadcast')
 const udpPort = config.get<number>('udpPort')
 const poweringOnComputerTimeoutMillis = config.get<number>('poweringOnComputerTimeout')
@@ -35,7 +35,7 @@ async function main() {
     const consoleService: IConsoleService = await new UdpConsoleService(udpPort, logger).bind()
     const rackService: IRackService =  new RpiRackService(logger)
     const restClient: IRestClient = new HttpRestClient()
-    const hauptwerkService: IHauptwerkService = new RestHaupwterkService(restClient, hauptwerkEndpoint)
+    const hauptwerkService: IMainComputerService = new RestMainComputerService(restClient, mainApiServiceEndpoint)
     const pcStatusService: IPcStatusService = new RestPcStatusService(restClient, statusEndpoint, 5000, 2500)
     const wolService: IWolService = await new UdpWolService(ipBroadcast).bind()
     const consoleCommandsForwarder: ConsoleCommandsForwarder = new ConsoleCommandsForwarder(hauptwerkService)
@@ -142,6 +142,8 @@ async function main() {
         consoleCommands = consoleService.Commands.subscribe(async (command) => {
             if (command === ConsoleCommand.PowerCycle) {
                 nextStatus(powerCycleTimeout)
+            } else if (command === ConsoleCommand.ShutdownComputer) {
+                nextStatus(requestComputerShutdown)
             } else {
                 try {
                     await consoleCommandsForwarder.forward(command)
@@ -167,12 +169,13 @@ async function main() {
                 nextStatus(systemOnPermanent)
             }
         })
-        // TODO handle console power off detection
         consoleCommands = consoleService.Commands.pipe(
             timeout(consoleKeepAliveTimeoutMillis)
         ).subscribe(async (command) => {
             if (command === ConsoleCommand.PowerCycle) {
                 nextStatus(powerCycleTimeout)
+            } else if (command === ConsoleCommand.ShutdownComputer) {
+                nextStatus(requestComputerShutdown)
             } else {
                 try {
                     await consoleCommandsForwarder.forward(command)
