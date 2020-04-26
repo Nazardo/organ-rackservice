@@ -99,6 +99,8 @@ async function main() {
         rackCommands = rackService.Commands.subscribe((command) => {
             if (command === RackCommand.ReleaseLocalControl) {
                 nextStatus(systemOn)
+            } else if (command === RackCommand.PowerOff) {
+                nextStatus(requestComputerShutdown)
             }
         })
     }
@@ -118,6 +120,13 @@ async function main() {
                 nextStatus(waitForHauptwerkToLoad)
             }
         })
+        rackCommands = rackService.Commands.subscribe((command) => {
+            if (command === RackCommand.ManualPowerOn) {
+                nextStatus(systemOnPermanent)
+            } else if (command === RackCommand.PowerOff) {
+                nextStatus(systemOff)
+            }
+        })
         waitTimeout = interval(poweringOnComputerTimeoutMillis)
             .pipe(take(1))
             .subscribe((_) => nextStatus(powerCycleTimeout))
@@ -130,6 +139,11 @@ async function main() {
         waitTimeout = interval(powerCycleTimeoutMillis)
             .pipe(take(1))
             .subscribe((_) => nextStatus(poweringOnComputer))
+        rackCommands = rackService.Commands.subscribe((command) => {
+            if (command === RackCommand.PowerOff) {
+                nextStatus(systemOff)
+            }
+        })
     }
 
     async function waitForHauptwerkToLoad(): Promise<void> {
@@ -137,6 +151,8 @@ async function main() {
         rackCommands = rackService.Commands.subscribe((command) => {
             if (command === RackCommand.ManualPowerOn) {
                 nextStatus(systemOnPermanent)
+            } else if (command === RackCommand.PowerOff) {
+                nextStatus(requestComputerShutdown)
             }
         })
         consoleCommands = consoleService.Commands.subscribe(async (command) => {
@@ -167,6 +183,8 @@ async function main() {
         rackCommands = rackService.Commands.subscribe(async (command) => {
             if (command === RackCommand.ManualPowerOn) {
                 nextStatus(systemOnPermanent)
+            } else if (command === RackCommand.PowerOff) {
+                nextStatus(requestComputerShutdown)
             }
         })
         consoleCommands = consoleService.Commands.pipe(
@@ -195,6 +213,8 @@ async function main() {
         rackCommands = rackService.Commands.subscribe(async (command) => {
             if (command === RackCommand.ManualPowerOn) {
                 nextStatus(systemOnPermanent)
+            } else if (command === RackCommand.PowerOff) {
+                nextStatus(requestComputerShutdown)
             }
         })
         consoleCommands = consoleService.Commands.subscribe(async (command) => {
@@ -240,6 +260,13 @@ async function main() {
         waitTimeout = interval(haltTimeoutMillis)
             .pipe(take(1))
             .subscribe((_) => nextStatus(systemOff))
+        rackCommands = rackService.Commands.subscribe((command) => {
+            if (command === RackCommand.ManualPowerOn) {
+                nextStatus(systemOnPermanent)
+            } else if (command === RackCommand.PowerOff) {
+                nextStatus(systemOff)
+            }
+        })
     }
 }
 
