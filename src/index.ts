@@ -138,7 +138,7 @@ async function main() {
         await setStatus(Status.PowerCycleTimeout)
         waitTimeout = interval(powerCycleTimeoutMillis)
             .pipe(take(1))
-            .subscribe((_) => nextStatus(poweringOnComputer))
+            .subscribe((_) => nextStatus(systemOff))
         rackCommands = rackService.Commands.subscribe((command) => {
             if (command === RackCommand.PowerOff) {
                 nextStatus(systemOff)
