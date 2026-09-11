@@ -22,8 +22,12 @@ export class HttpRestClient implements IRestClient {
             try {
                 const data = <TResponse>JSON.parse(rawData);
                 resolve(restData(data))
-            } catch (e) {
-                resolve(restError(e))
+            } catch (e : any) {
+                if (e instanceof SyntaxError) {
+                    resolve(restError(e.message))
+                } else {
+                    resolve(restError("Unknown error"))
+                }
             }
         });
     }
